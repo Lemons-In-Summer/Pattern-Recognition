@@ -1,11 +1,11 @@
-# MT4 K线形态识别指标 - Implementation Plan
+# 顶底分型与形态识别指标 - Implementation Plan
 
 ## [x] Task 1: 创建指标基础框架和配置参数
 - **Priority**: high
 - **Depends On**: None
 - **Description**: 
   - 创建MQL4指标文件基础结构
-  - 定义外部参数（警报开关、箭头颜色、形态过滤等）
+  - 定义外部参数（各形态开关、颜色、警报设置等）
   - 初始化全局变量和数组
   - 实现指标初始化和去初始化函数
 - **Acceptance Criteria Addressed**: NFR-3, NFR-4
@@ -18,145 +18,138 @@
 - **Priority**: high
 - **Depends On**: Task 1
 - **Description**: 
-  - 创建K线数据结构存储OHLC和其他属性
-  - 实现K线类型判断函数（阳线/阴线/十字线）
-  - 实现实体、影线长度计算函数
-  - 实现K线相对位置判断函数
-- **Acceptance Criteria Addressed**: FR-1 to FR-15 (基础支撑)
+  - 创建K线数据结构存储OHLC和属性
+  - 实现K线类型判断（阳线/阴线）
+  - 实现实体、影线长度计算
+  - 实现相对位置判断函数
+- **Acceptance Criteria Addressed**: FR-1 to FR-8 (基础支撑)
 - **Test Requirements**:
-  - `programmatic` TR-2.1: K线类型判断准确（阳/阴/十字）
+  - `programmatic` TR-2.1: K线类型判断准确
   - `programmatic` TR-2.2: 实体和影线长度计算正确
-  - `human-judgment` TR-2.3: 辅助函数命名清晰，易于理解
+  - `human-judgment` TR-2.3: 辅助函数命名清晰
 
-## [x] Task 3: 实现单根K线形态识别（锤子线、上吊线、射击之星、倒锤子线）
+## [x] Task 3: 实现顶底分型识别
 - **Priority**: high
 - **Depends On**: Task 2
 - **Description**: 
-  - 实现锤子线识别逻辑
-  - 实现上吊线识别逻辑
-  - 实现射击之星识别逻辑
-  - 实现倒锤子线识别逻辑
-- **Acceptance Criteria Addressed**: FR-4, FR-5, FR-12, FR-13
+  - 实现顶分型识别逻辑（中间K最高价高于左右）
+  - 实现底分型识别逻辑（中间K最低价低于左右）
+  - 实现优等条件判断（第三根K突破等）
+  - 标记止损位（中间K最高/最低±0.3）
+- **Acceptance Criteria Addressed**: FR-1, FR-2, FR-3
 - **Test Requirements**:
-  - `programmatic` TR-3.1: 锤子线形态识别正确
-  - `programmatic` TR-3.2: 上吊线形态识别正确
-  - `programmatic` TR-3.3: 射击之星形态识别正确
-  - `programmatic` TR-3.4: 倒锤子线形态识别正确
+  - `programmatic` TR-3.1: 顶分型识别正确
+  - `programmatic` TR-3.2: 底分型识别正确
+  - `programmatic` TR-3.3: 优等条件判断正确
+  - `programmatic` TR-3.4: 止损位计算正确
 
-## [x] Task 4: 实现两根K线形态识别（吞没、刺透、乌云盖顶、孕线、十字孕线）
+## [x] Task 4: 实现Pinbar识别
 - **Priority**: high
 - **Depends On**: Task 2
 - **Description**: 
-  - 实现看涨吞没识别逻辑
-  - 实现看跌吞没识别逻辑
-  - 实现刺透形态识别逻辑
-  - 实现乌云盖顶识别逻辑
-  - 实现孕线和十字孕线识别逻辑
-- **Acceptance Criteria Addressed**: FR-6, FR-7, FR-8, FR-9, FR-10, FR-11
+  - 实现上Pinbar识别（下影线占2/3）
+  - 实现下Pinbar识别（上影线占2/3）
+  - 标记止损止盈位
+- **Acceptance Criteria Addressed**: FR-4, FR-5
 - **Test Requirements**:
-  - `programmatic` TR-4.1: 看涨吞没形态识别正确
-  - `programmatic` TR-4.2: 看跌吞没形态识别正确
-  - `programmatic` TR-4.3: 刺透形态识别正确
-  - `programmatic` TR-4.4: 乌云盖顶形态识别正确
-  - `programmatic` TR-4.5: 孕线和十字孕线形态识别正确
+  - `programmatic` TR-4.1: 上Pinbar识别正确
+  - `programmatic` TR-4.2: 下Pinbar识别正确
+  - `programmatic` TR-4.3: 止损止盈位计算正确
 
-## [x] Task 5: 实现多根K线形态识别（早晨之星、黄昏之星、三只乌鸦、上升三法、下降三法）
+## [x] Task 5: 实现孕线识别
 - **Priority**: high
 - **Depends On**: Task 2
 - **Description**: 
-  - 实现早晨之星识别逻辑
-  - 实现黄昏之星识别逻辑
-  - 实现三只乌鸦识别逻辑
-  - 实现上升三法识别逻辑
-  - 实现下降三法识别逻辑
-- **Acceptance Criteria Addressed**: FR-1, FR-2, FR-3, FR-14, FR-15
+  - 实现孕线基础识别（母线包子线实体和影线）
+  - 实现优等条件判断（不持平为优等）
+  - 实现第三根K方向判断
+  - 标记止损位（母线最高最低±0.3）
+- **Acceptance Criteria Addressed**: FR-6, FR-7
 - **Test Requirements**:
-  - `programmatic` TR-5.1: 早晨之星形态识别正确
-  - `programmatic` TR-5.2: 黄昏之星形态识别正确
-  - `programmatic` TR-5.3: 三只乌鸦形态识别正确
-  - `programmatic` TR-5.4: 上升三法形态识别正确
-  - `programmatic` TR-5.5: 下降三法形态识别正确
+  - `programmatic` TR-5.1: 孕线基础识别正确
+  - `programmatic` TR-5.2: 优等条件判断正确
+  - `programmatic` TR-5.3: 第三根K方向判断正确
 
-## [x] Task 6: 实现图表标记功能（绘制箭头）
+## [x] Task 6: 实现2B战法识别
 - **Priority**: high
-- **Depends On**: Task 1, Task 3, Task 4, Task 5
+- **Depends On**: Task 2
 - **Description**: 
-  - 实现在识别位置绘制向上/向下箭头
-  - 设置箭头颜色（绿色=看涨，红色=看跌）
-  - 实现箭头样式和大小配置
-  - 避免重复标记同一位置
-- **Acceptance Criteria Addressed**: FR-16
+  - 实现阴包阳识别（顶部反转）
+  - 实现阳包阴识别（底部反转）
+  - 支持3根K比较
+  - 优品判断（第二根实体包住第一根实体）
+- **Acceptance Criteria Addressed**: FR-8
 - **Test Requirements**:
-  - `human-judgment` TR-6.1: 箭头在正确位置显示
-  - `human-judgment` TR-6.2: 箭头颜色与形态方向一致
-  - `human-judgment` TR-6.3: 无重复标记
+  - `programmatic` TR-6.1: 阴包阳识别正确
+  - `programmatic` TR-6.2: 阳包阴识别正确
+  - `programmatic` TR-6.3: 优品判断正确
 
-## [x] Task 7: 实现声音警报功能
+## [x] Task 7: 实现支撑阻力位绘制
 - **Priority**: medium
 - **Depends On**: Task 1
 - **Description**: 
-  - 使用PlaySound()函数播放声音
-  - 支持自定义声音文件路径
-  - 实现声音警报开关控制
-  - 添加声音播放频率限制（避免重复播放）
-- **Acceptance Criteria Addressed**: FR-17
+  - 实现整数位/半数位支撑阻力线
+  - 实现长K线起涨点标记
+  - 实现支阻区间标记
+  - 支持颜色和样式配置
+- **Acceptance Criteria Addressed**: FR-9, FR-10
 - **Test Requirements**:
-  - `human-judgment` TR-7.1: 识别到形态时播放声音
-  - `human-judgment` TR-7.2: 关闭声音警报后不播放
-  - `human-judgment` TR-7.3: 同一形态不重复播放
+  - `human-judgment` TR-7.1: 整数位半数位线绘制正确
+  - `human-judgment` TR-7.2: 长K起涨点标记正确
+  - `human-judgment` TR-7.3: 支阻区间标记正确
 
-## [x] Task 8: 实现弹框警报功能
+## [x] Task 8: 实现图表标记功能
+- **Priority**: high
+- **Depends On**: Task 1, Task 3-6
+- **Description**: 
+  - 绘制形态箭头标记
+  - 绘制文字标签（形态名称）
+  - 绘制止损止盈线
+  - 避免重复标记
+- **Acceptance Criteria Addressed**: FR-11
+- **Test Requirements**:
+  - `human-judgment` TR-8.1: 箭头在正确位置显示
+  - `human-judgment` TR-8.2: 文字标签清晰可读
+  - `human-judgment` TR-8.3: 止损止盈线绘制正确
+
+## [x] Task 9: 实现警报功能（声音、弹框、日志）
 - **Priority**: medium
 - **Depends On**: Task 1
 - **Description**: 
-  - 使用Alert()函数弹出警告窗口
-  - 警报内容包含形态名称和时间信息
-  - 实现弹框警报开关控制
-  - 添加弹框频率限制
-- **Acceptance Criteria Addressed**: FR-18
+  - 使用PlaySound()播放声音
+  - 使用Alert()弹出警告
+  - 使用FileWrite()记录日志
+  - 实现警报频率限制
+- **Acceptance Criteria Addressed**: FR-12, FR-13, FR-14
 - **Test Requirements**:
-  - `human-judgment` TR-8.1: 识别到形态时弹出警告窗口
-  - `human-judgment` TR-8.2: 警告信息包含形态名称和时间
-  - `human-judgment` TR-8.3: 关闭弹框警报后不弹出
-
-## [x] Task 9: 实现日志记录功能
-- **Priority**: medium
-- **Depends On**: Task 1
-- **Description**: 
-  - 使用FileOpen()/FileWrite()函数写入日志
-  - 日志格式包含时间、品种、形态名称、方向、价格
-  - 实现日志开关控制
-  - 自动处理文件大小限制（定期新建日志文件）
-- **Acceptance Criteria Addressed**: FR-19
-- **Test Requirements**:
-  - `programmatic` TR-9.1: 日志文件正确创建
-  - `programmatic` TR-9.2: 日志内容格式正确完整
-  - `programmatic` TR-9.3: 关闭日志后不写入
+  - `human-judgment` TR-9.1: 声音警报正常
+  - `human-judgment` TR-9.2: 弹框警报正常
+  - `programmatic` TR-9.3: 日志记录正确
+  - `human-judgment` TR-9.4: 频率限制有效
 
 ## [x] Task 10: 实现EA接口功能
 - **Priority**: high
-- **Depends On**: Task 1, Task 3, Task 4, Task 5
+- **Depends On**: Task 1, Task 3-6
 - **Description**: 
-  - 实现GetPatternSignal()函数供外部EA调用
-  - 返回最新形态类型、方向、时间、价格
+  - 实现GetSignal()函数获取最新信号
+  - 返回形态类型、方向、时间、价格、止损止盈
   - 实现信号有效期管理
-  - 添加信号确认机制（避免虚假信号）
-- **Acceptance Criteria Addressed**: FR-20
+- **Acceptance Criteria Addressed**: FR-15
 - **Test Requirements**:
-  - `programmatic` TR-10.1: EA接口函数正确返回信号
-  - `programmatic` TR-10.2: 信号包含完整信息（类型、方向、时间、价格）
+  - `programmatic` TR-10.1: EA接口返回正确信号
+  - `programmatic` TR-10.2: 信号信息完整
   - `programmatic` TR-10.3: 无效信号返回正确状态
 
 ## [x] Task 11: 整合所有功能并优化代码
 - **Priority**: medium
 - **Depends On**: Task 1-10
 - **Description**: 
-  - 整合所有模块到主文件
-  - 优化指标计算效率
-  - 添加必要的注释说明
-  - 测试整体功能流程
+  - 整合所有模块
+  - 优化计算效率
+  - 添加详细注释
+  - 测试整体功能
 - **Acceptance Criteria Addressed**: NFR-1, NFR-2
 - **Test Requirements**:
   - `programmatic` TR-11.1: 指标整体编译成功
   - `human-judgment` TR-11.2: 代码结构清晰，注释完善
-  - `human-judgment` TR-11.3: 指标运行流畅，无明显卡顿
+  - `human-judgment` TR-11.3: 指标运行流畅
