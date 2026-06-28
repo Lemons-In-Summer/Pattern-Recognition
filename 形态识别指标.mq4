@@ -119,7 +119,7 @@ struct CandleData
 //| 全局变量                                                           |
 //+------------------------------------------------------------------+
 SignalData lastSignal;
-int        lastAlertTime = 0;
+datetime   lastAlertTime = 0;
 int        lastSignalBar = -1;
 PatternType lastPattern = PT_NONE;
 
@@ -442,8 +442,7 @@ void DrawHLine(double price, string name, color clr, int style)
 void PlayAlert()
 {
     if(!AlertSound) return;
-    if(FileExists(SoundFile))
-        PlaySound(SoundFile);
+    PlaySound(SoundFile);
 }
 
 //+------------------------------------------------------------------+
@@ -466,9 +465,10 @@ void WriteLog(string pattern, string dir, datetime t, double p, double sl, doubl
     if(!AlertLog) return;
     
     string fn = "PatternSignal_" + Symbol() + ".log";
-    int h = FileOpen(fn, FILE_WRITE|FILE_APPEND|FILE_TXT);
+    int h = FileOpen(fn, FILE_READ|FILE_WRITE|FILE_TXT);
     if(h != INVALID_HANDLE)
     {
+        FileSeek(h, 0, SEEK_END);
         string line = StringFormat("[%s] %s - %s | %s | 价格:%.5f 止损:%.5f 止盈:%.5f\n",
                                     TimeToString(TimeCurrent(), TIME_DATE|TIME_SECONDS),
                                     pattern, dir, Symbol(), p, sl, tp);
@@ -483,7 +483,7 @@ void WriteLog(string pattern, string dir, datetime t, double p, double sl, doubl
 void TriggerSignal(PatternType pt, SignalDir dir, int idx, double price, 
                    double sl, double tp, bool isPremium)
 {
-    int now = TimeCurrent();
+    datetime now = TimeCurrent();
     if(now - lastAlertTime < AlertInterval) return;
     if(idx == lastSignalBar && pt == lastPattern) return;
     
