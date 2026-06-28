@@ -213,7 +213,8 @@ bool IsUpPinbar(int idx)
     double bodyRatio = c.body / c.totalRange;
     double upperRatio = c.upperShadow / c.totalRange;
     
-    return (lowerRatio >= 0.6 && bodyRatio <= 0.25 && upperRatio <= 0.15);
+    // 下影线占2/3以上，实体小，上影线少
+    return (lowerRatio >= 0.66 && bodyRatio <= 0.2 && upperRatio <= 0.14);
 }
 
 //+------------------------------------------------------------------+
@@ -229,7 +230,8 @@ bool IsDownPinbar(int idx)
     double bodyRatio = c.body / c.totalRange;
     double lowerRatio = c.lowerShadow / c.totalRange;
     
-    return (upperRatio >= 0.6 && bodyRatio <= 0.25 && lowerRatio <= 0.15);
+    // 上影线占2/3以上，实体小，下影线少
+    return (upperRatio >= 0.66 && bodyRatio <= 0.2 && lowerRatio <= 0.14);
 }
 
 //+------------------------------------------------------------------+
@@ -615,6 +617,7 @@ void RecognizeAll(int idx)
     // 顶分型
     if(EnableTopFractal && IsTopFractal(idx, premium))
     {
+        Print("发现顶分型 at bar ", idx, " 时间:", TimeToString(Time[idx+1]));
         double sl = High[idx+1] + StopLoss_Buffer * Point;
         double tp = Low[idx+1] - (sl - High[idx+1]);
         DrawArrowObj(idx+1, SD_SELL, High[idx+1], "TopFrac");
@@ -628,6 +631,7 @@ void RecognizeAll(int idx)
     // 底分型
     if(EnableBottomFractal && IsBottomFractal(idx, premium))
     {
+        Print("发现底分型 at bar ", idx, " 时间:", TimeToString(Time[idx+1]));
         double sl = Low[idx+1] - StopLoss_Buffer * Point;
         double tp = High[idx+1] + (Low[idx+1] - sl);
         DrawArrowObj(idx+1, SD_BUY, Low[idx+1], "BotFrac");
@@ -641,6 +645,7 @@ void RecognizeAll(int idx)
     // 上Pinbar
     if(EnableUpPinbar && IsUpPinbar(idx))
     {
+        Print("发现上Pinbar at bar ", idx, " 时间:", TimeToString(Time[idx]));
         double sl = Low[idx] - StopLoss_Buffer * Point;
         double tp = High[idx] + (Low[idx] - sl);
         DrawArrowObj(idx, SD_BUY, Low[idx], "UpPin");
@@ -653,6 +658,7 @@ void RecognizeAll(int idx)
     // 下Pinbar
     if(EnableDownPinbar && IsDownPinbar(idx))
     {
+        Print("发现下Pinbar at bar ", idx, " 时间:", TimeToString(Time[idx]));
         double sl = High[idx] + StopLoss_Buffer * Point;
         double tp = Low[idx] - (sl - High[idx]);
         DrawArrowObj(idx, SD_SELL, High[idx], "DownPin");
@@ -665,6 +671,7 @@ void RecognizeAll(int idx)
     // 孕线
     if(EnableHarami && IsHarami(idx, dir, premium))
     {
+        Print("发现孕线 at bar ", idx, " 方向:", dir, " 时间:", TimeToString(Time[idx+1]));
         CandleData mother = GetCandle(idx+1);
         double sl, tp;
         PatternType pt;
@@ -695,6 +702,7 @@ void RecognizeAll(int idx)
     // 2B战法
     if(Enable2B && Is2BPattern(idx, dir, premium))
     {
+        Print("发现2B战法 at bar ", idx, " 方向:", dir, " 时间:", TimeToString(Time[idx]));
         double sl, tp;
         PatternType pt;
         
@@ -749,14 +757,24 @@ int OnCalculate(const int rates_total,
                 const long &volume[],
                 const int &spread[])
 {
-    int start = prev_calculated > 0 ? prev_calculated - 5 : rates_total - 1;
+    // 确保有足够的K线数据
+    if(rates_total < 10) return(rates_total);
+    
+    // 计算起始位置，确保不越界（最大索引为 rates_total-3，因为需要访问 idx+2）
+    int start;
+    if(prev_calculated > 0)
+        start = MathMin(prev_calculated - 1, rates_total - 3);
+    else
+        start = rates_total - 3;
+    
     if(start < 5) start = 5;
     
     DrawSR_Integer();
     DrawSR_Half();
     DrawSR_LongK();
     
-    for(int i = start; i >= 0; i--)
+    // 从start递减到1（跳过idx=0，当前K线未完成）
+    for(int i = start; i >= 1; i--)
     {
         RecognizeAll(i);
     }
